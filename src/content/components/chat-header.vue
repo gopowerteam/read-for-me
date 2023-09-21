@@ -86,4 +86,8 @@ onMounted(async () => {
 button+button{
   margin-left:0;
 }
+
+:deep(ul){
+  margin: 0;
+}
 </style>

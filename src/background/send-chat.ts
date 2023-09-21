@@ -1,18 +1,14 @@
 import { OpenAI } from "langchain/llms/openai";
 import {
   EVENT_RESPONSE_MSG,
-  STORAGE_ANSWER_PROMPT,
   STORAGE_OPENAI_API,
-  STORAGE_SUMMARY_PROMPT,
 } from "../config/constant.config";
-import { PromptTemplate } from "langchain/prompts";
 import { appConfig } from "../config/app.config";
-import html2md from "html-to-md";
 
 export async function sendChat(tabId: number, id: string, question: string) {
   const storage = await chrome.storage.local.get();
   const openAI = storage[STORAGE_OPENAI_API];
-  console.log(openAI,3331)
+
   const model = new OpenAI(
     {
       modelName: openAI?.model ?? appConfig.openai.model,

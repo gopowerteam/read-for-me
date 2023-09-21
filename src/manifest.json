@@ -29,12 +29,9 @@
   ],
   "options_page": "src/options/index.html",
   "permissions": [
-    "tabGroups",
     "activeTab",
     "contextMenus",
-    "scripting",
-    "storage",
-    "nativeMessaging"
+    "storage"
   ],
   "commands": {
     "_execute_action": {

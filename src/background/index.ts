@@ -8,20 +8,20 @@ import {
 import { getSummaryPrompt, getAnswerPrompt } from "./prompts";
 import { sendChat } from "./send-chat";
 
-chrome.contextMenus.create(
-  {
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.contextMenus.create({
     title: "帮我读 | 全文总结",
     type: "normal",
     id: "SUMMARY_PAGE",
     contexts: ["page"],
-  },
-);
+  });
 
-chrome.contextMenus.create({
-  title: "帮我读 | 选中总结",
-  type: "normal",
-  id: "SUMMARY_SELECTION",
-  contexts: ["selection"],
+  chrome.contextMenus.create({
+    title: "帮我读 | 选中总结",
+    type: "normal",
+    id: "SUMMARY_SELECTION",
+    contexts: ["selection"],
+  });
 });
 
 chrome.contextMenus.onClicked.addListener((data, tab) => {

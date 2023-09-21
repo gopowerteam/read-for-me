@@ -1,5 +1,5 @@
 <template>
-  <div class="container bg-yellow" :class="{ collapsed: store.collapsed }">
+  <div class="read-for-me_container" :class="{ collapsed: store.collapsed }">
     <div class="collapsed-btn" @click="store.toggleCollapsed">
       <span class="i-icon-park-outline:right"></span>
     </div>
@@ -55,7 +55,7 @@ function updateScroll() {
 watchOnce(
   () => store.collapsed,
   () => {
-    if (!store.collapsed) {
+    if (!store.collapsed&&!!openai.value?.key) {
       generateSummary();
     }
   }
@@ -117,7 +117,7 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-.container {
+.read-for-me_container {
   position: fixed;
   right: 0;
   top: 0;
@@ -127,6 +127,7 @@ onMounted(() => {
   z-index: 99999;
   transition: transform 0.15s ease-out;
   box-shadow: 0 0 5px 5px rgba($color: #000000, $alpha: 0.1);
+  display: block!important;
 
   &.collapsed {
     transform: translateX(250px);

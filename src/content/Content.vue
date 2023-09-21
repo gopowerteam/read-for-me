@@ -19,7 +19,7 @@
     </div>
     <div v-else class="flex flex-col justify-center items-center absolute inset-0">
       <AButton type="primary" @click="onOpenOptions">配置OPENAI API KEY</AButton>
-      <div class="mt-5">
+      <div class="mt-2">
         <ALink @click="onReload">刷新</ALink>
       </div>
     </div>

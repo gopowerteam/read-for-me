@@ -3,7 +3,10 @@
     <div class="collapsed-btn" @click="store.toggleCollapsed">
       <span class="i-icon-park-outline:right"></span>
     </div>
-    <div class="chat-container absolute inset-0 flex flex-col">
+    <div
+      class="chat-container absolute inset-0 flex flex-col"
+      v-if="openai?.key"
+    >
       <div class="chat-header">
         <ChatHeader></ChatHeader>
       </div>
@@ -12,6 +15,12 @@
       </div>
       <div class="chat-input">
         <ChatInput></ChatInput>
+      </div>
+    </div>
+    <div v-else class="flex flex-col justify-center items-center absolute inset-0">
+      <AButton type="primary" @click="onOpenOptions">配置OPENAI API KEY</AButton>
+      <div class="mt-5">
+        <ALink @click="onReload">刷新</ALink>
       </div>
     </div>
   </div>
@@ -26,42 +35,46 @@ import {
   ACTION_SUMMARY_CONTENT,
   ACTION_TOGGER_DRAWER,
   EVENT_RESPONSE_MSG,
+  STORAGE_OPENAI_API,
+  ACTION_OPEN_OPTIONS
 } from "../config/constant.config";
 import ChatInput from "./components/chat-input.vue";
 import ChatList from "./components/chat-list.vue";
-import ChatHeader from './components/chat-header.vue'
-import {watchOnce} from '@vueuse/core'
+import ChatHeader from "./components/chat-header.vue";
+import { watchOnce } from "@vueuse/core";
+
 const store = useStore();
+const openai = ref();
 
+function updateScroll() {
+  var element = document.getElementById("chat-list");
 
-function updateScroll(){
-    var element = document.getElementById("chat-list");
-
-    if(element)
-      element.scrollTop = element.scrollHeight;
+  if (element) element.scrollTop = element.scrollHeight;
 }
 
-
-watchOnce(()=>store.collapsed,()=>{
-  if(!store.collapsed){
-    generateSummary()
+watchOnce(
+  () => store.collapsed,
+  () => {
+    if (!store.collapsed) {
+      generateSummary();
+    }
   }
-})
+);
 /**
  * Extract Html Content form body
  */
 async function generateSummary() {
-    // 获取文章内容
-    const article = await extractFromHtml(document.documentElement.outerHTML);
-    store.updateContent(article?.content || "");
-    // 请求生成摘要
-    const id = store.addRecord("", "AI");
+  // 获取文章内容
+  const article = await extractFromHtml(document.documentElement.outerHTML);
+  store.updateContent(article?.content || "");
+  // 请求生成摘要
+  const id = store.addRecord("", "AI");
 
-    chrome.runtime.sendMessage({
-      type: ACTION_SUMMARY_CONTENT,
-      content: article?.content,
-      id,
-    });
+  chrome.runtime.sendMessage({
+    type: ACTION_SUMMARY_CONTENT,
+    content: article?.content,
+    id,
+  });
 }
 
 function onMessage(
@@ -75,7 +88,7 @@ function onMessage(
       break;
     case EVENT_RESPONSE_MSG:
       store.updateRecord(request.id, request.content, request.state);
-      updateScroll()
+      updateScroll();
       break;
     case ACTION_CREATE_RECORD:
       const id = store.addRecord("", "AI");
@@ -84,7 +97,21 @@ function onMessage(
   }
 }
 
+async function getOpenAISetting() {
+  const storage = await chrome.storage.local.get();
+  openai.value = storage[STORAGE_OPENAI_API];
+}
+
+function onOpenOptions() {
+  chrome.runtime.sendMessage({ type: ACTION_OPEN_OPTIONS });
+}
+
+function onReload(){
+  location.reload()
+}
+
 onMounted(() => {
+  getOpenAISetting();
   chrome.runtime.onMessage.addListener(onMessage);
 });
 </script>
@@ -112,6 +139,7 @@ onMounted(() => {
   }
 
   .collapsed-btn {
+    cursor: pointer;
     box-shadow: -5px 0px 20px 2px rgba($color: #000000, $alpha: 0.1);
     cursor: pointer;
     display: flex;

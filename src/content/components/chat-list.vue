@@ -20,7 +20,6 @@ const showQuestions = ref<boolean>(false)
 async function getShowQuestions(){
   const storage = await chrome.storage.local.get()
   const setting = storage[STORAGE_SETTING]
-  console.log(setting,132313)
   showQuestions.value = setting?.showQuestions ?? appConfig.setting.showQuestions
 }
 

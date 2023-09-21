@@ -1,31 +1,28 @@
 import {
   ACTION_ANSWER_CONTENT,
   ACTION_CREATE_RECORD,
+  ACTION_OPEN_OPTIONS,
   ACTION_SUMMARY_CONTENT,
   ACTION_TOGGER_DRAWER,
 } from "../config/constant.config";
 import { getSummaryPrompt, getAnswerPrompt } from "./prompts";
 import { sendChat } from "./send-chat";
 
-const id = Math.random().toString(16).slice(2).toUpperCase();
-
 chrome.contextMenus.create(
   {
-    title: "帮我读",
+    title: "帮我读 | 全文总结",
     type: "normal",
-    id,
-    contexts: ["all"],
+    id: "SUMMARY_PAGE",
+    contexts: ["page"],
   },
-  () => {
-    chrome.contextMenus.create({
-      title: "总结选中内容",
-      type: "normal",
-      id: "SUMMARY_SELECTION",
-      contexts: ["selection"],
-      parentId: id,
-    });
-  }
 );
+
+chrome.contextMenus.create({
+  title: "帮我读 | 选中总结",
+  type: "normal",
+  id: "SUMMARY_SELECTION",
+  contexts: ["selection"],
+});
 
 chrome.contextMenus.onClicked.addListener((data, tab) => {
   switch (data.menuItemId) {
@@ -39,7 +36,6 @@ chrome.contextMenus.onClicked.addListener((data, tab) => {
         {
           type: ACTION_CREATE_RECORD,
           content: "",
-          id,
           state: "COMPLETED",
         },
         (id) => {
@@ -98,6 +94,9 @@ chrome.runtime.onMessage.addListener((request, sender) => {
         request.content,
         request.question
       );
+      break;
+    case ACTION_OPEN_OPTIONS:
+      chrome.runtime.openOptionsPage();
       break;
   }
 });

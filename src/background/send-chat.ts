@@ -12,7 +12,7 @@ import html2md from "html-to-md";
 export async function sendChat(tabId: number, id: string, question: string) {
   const storage = await chrome.storage.local.get();
   const openAI = storage[STORAGE_OPENAI_API];
-
+  console.log(openAI,3331)
   const model = new OpenAI(
     {
       modelName: openAI?.model ?? appConfig.openai.model,

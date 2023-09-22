@@ -4,7 +4,10 @@
     :id="record.id"
     :key="record.id"
   />
-  <ChatQuestions v-if="showQuestions" />
+  <div v-if="!!store.content">
+    {{ !store.content }}
+    <ChatQuestions v-if="showQuestions" />
+  </div>
 </template>
 
 <style scoped></style>

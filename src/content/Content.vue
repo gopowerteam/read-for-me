@@ -117,21 +117,37 @@ watchOnce(
       generateSummary()
   },
 )
+
+async function getHtmlContent() {
+  try {
+    return await extractFromHtml(document.documentElement.outerHTML)
+  }
+  catch (ex) {
+    console.error(ex)
+  }
+}
 /**
  * Extract Html Content form body
  */
 async function generateSummary() {
   // 获取文章内容
-  const article = await extractFromHtml(document.documentElement.outerHTML)
-  store.updateContent(article?.content || '')
-  // 请求生成摘要
-  const id = store.addRecord('', 'AI')
+  const article = await getHtmlContent()
 
-  chrome.runtime.sendMessage({
-    type: ACTION_SUMMARY_CONTENT,
-    content: article?.content,
-    id,
-  })
+  if (article && article.content) {
+    store.updateContent(article?.content || '')
+    // 请求生成摘要
+    const id = store.addRecord('', 'AI')
+
+    chrome.runtime.sendMessage({
+      type: ACTION_SUMMARY_CONTENT,
+      content: article?.content,
+      id,
+    })
+  }
+  else {
+    const id = store.addRecord('', 'AI')
+    store.updateRecord(id, '未能获取到有效的文章内容', 'COMPLETED')
+  }
 }
 
 function onMessage(

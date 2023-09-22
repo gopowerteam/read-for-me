@@ -18,7 +18,7 @@ const store = useStore()
 const input = ref('')
 
 const disabled = computed(() =>
-  store.records.some(x => ['RESPONSING', 'WAITING'].includes(x.state)),
+  store.records.some(x => ['RESPONSING', 'WAITING'].includes(x.state)) || !store.content,
 )
 
 function onSubmit() {

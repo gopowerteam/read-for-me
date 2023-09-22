@@ -72,14 +72,15 @@ function onChangeLanguage(value: any) {
 }
 
 function onReset() {
-  store.clearRecord()
-  const id = store.addRecord('', 'AI')
-
-  chrome.runtime.sendMessage({
-    type: ACTION_SUMMARY_CONTENT,
-    content: store?.content,
-    id,
-  })
+  if (store.content) {
+    store.clearRecord()
+    const id = store.addRecord('', 'AI')
+    chrome.runtime.sendMessage({
+      type: ACTION_SUMMARY_CONTENT,
+      content: store?.content,
+      id,
+    })
+  }
 }
 
 function onOpenOptions() {

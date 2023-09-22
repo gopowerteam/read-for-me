@@ -1,12 +1,12 @@
-name: release
+name: publish
 on:
   push:
-    tags:
-      - "v*.*.*"
-
+    branches:
+      - master
 jobs:
-  deploy:
+  release:
     runs-on: ubuntu-latest
+    if: ${{ startsWith(github.event.head_commit.message, 'release') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -21,10 +21,27 @@ jobs:
         with:
           node-version: 18
           cache: 'pnpm'
+          
+      - name: Configure Git User
+        run: |
+          git config --global user.email "2037630@163.com"
+          git config --global user.name "zhuchentong"
 
       - name: Install dependencies
         run: pnpm install
 
+      - name: Tag Patch Version
+        run: npx bumpp patch -y
+        if: ${{ startsWith(github.event.head_commit.message, 'release(patch):') }}
+
+      - name: Tag Minor Version
+        run: npx bumpp patch -y
+        if: ${{ startsWith(github.event.head_commit.message, 'release(minor):') }}
+
+      - name: Tag Major Version
+        run: npx bumpp major -y
+        if: ${{ startsWith(github.event.head_commit.message, 'release(major):') }}
+  
       - name: Build Package
         run: pnpm build
 

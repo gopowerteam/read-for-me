@@ -9,10 +9,6 @@ module.exports = {
       name: '🐛 修复:     提交问题修复',
     },
     {
-      value: 'release',
-      name: '🚀 发布:     发布项目版本',
-    },
-    {
       value: 'docs',
       name: '📖 文档:     提交文档更新',
     },

@@ -8,7 +8,8 @@
     "build": "vue-tsc && vite build",
     "commit": "git-cz",
     "lint:eslint": "eslint \"src/**/*.{vue,ts,tsx}\" --fix",
-    "precommit": "chmod +x .husky/*"
+    "precommit": "chmod +x .husky/*",
+    "release":"bumpp"
   },
   "dependencies": {
     "@arco-design/web-vue": "^2.51.1",

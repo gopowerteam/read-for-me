@@ -1,7 +1,7 @@
 {
   "name": "read_for_me",
   "private": true,
-  "version": "0.0.2",
+  "version": "0.0.3",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -63,7 +63,7 @@
       "path": "node_modules/cz-customizable"
     },
     "cz-customizable": {
-        "config": ".cz-config.cjs"
+      "config": ".cz-config.cjs"
     }
   }
 }

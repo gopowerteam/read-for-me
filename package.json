@@ -9,7 +9,7 @@
     "commit": "git-cz",
     "lint:eslint": "eslint \"src/**/*.{vue,ts,tsx}\" --fix",
     "precommit": "chmod +x .husky/*",
-    "release":"bumpp"
+    "release": "bumpp"
   },
   "dependencies": {
     "@arco-design/web-vue": "^2.51.1",

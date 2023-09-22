@@ -1,13 +1,13 @@
-import { OpenAI } from "langchain/llms/openai";
+import { OpenAI } from 'langchain/llms/openai'
 import {
   EVENT_RESPONSE_MSG,
   STORAGE_OPENAI_API,
-} from "../config/constant.config";
-import { appConfig } from "../config/app.config";
+} from '../config/constant.config'
+import { appConfig } from '../config/app.config'
 
 export async function sendChat(tabId: number, id: string, question: string) {
-  const storage = await chrome.storage.local.get();
-  const openAI = storage[STORAGE_OPENAI_API];
+  const storage = await chrome.storage.local.get()
+  const openAI = storage[STORAGE_OPENAI_API]
 
   const model = new OpenAI(
     {
@@ -18,8 +18,8 @@ export async function sendChat(tabId: number, id: string, question: string) {
     },
     {
       baseURL: openAI?.host ?? appConfig.openai.host,
-    }
-  );
+    },
+  )
 
   await model.call(question, {
     callbacks: [
@@ -29,17 +29,17 @@ export async function sendChat(tabId: number, id: string, question: string) {
             type: EVENT_RESPONSE_MSG,
             content: token,
             id,
-            state: "RESPONSING",
-          });
+            state: 'RESPONSING',
+          })
         },
       },
     ],
-  });
+  })
 
   chrome.tabs.sendMessage(tabId, {
     type: EVENT_RESPONSE_MSG,
-    content: "",
+    content: '',
     id,
-    state: "COMPLETED",
-  });
+    state: 'COMPLETED',
+  })
 }

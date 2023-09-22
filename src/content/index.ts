@@ -1,22 +1,22 @@
-import "./style.scss";
-import "uno.css";
+import './style.scss'
+import 'uno.css'
 
-import { ROOT_CLASS } from "../config/constant.config";
-import { createApp } from "vue";
-import Content from "./Content.vue";
-import { createPinia } from "pinia";
+import { createApp } from 'vue'
+import { createPinia } from 'pinia'
+import { ROOT_CLASS } from '../config/constant.config'
+import Content from './Content.vue'
 
 async function launch() {
-  const container = document.createElement("section");
-  container.className = ROOT_CLASS;
-  document.body.prepend(container);
-  const pinia = createPinia();
+  const container = document.createElement('section')
+  container.className = ROOT_CLASS
+  document.body.prepend(container)
+  const pinia = createPinia()
 
-  const app = createApp(Content);
-  app.use(pinia);
-  app.mount(container);
+  const app = createApp(Content)
+  app.use(pinia)
+  app.mount(container)
 }
 
 setTimeout(() => {
-  launch();
-}, 150);
+  launch()
+}, 150)

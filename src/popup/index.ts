@@ -1,6 +1,5 @@
-import Popup from "./Popup.vue";
-import { createApp } from "vue";
+import { createApp } from 'vue'
+import Popup from './Popup.vue'
 import 'uno.css'
 
-createApp(Popup).mount("body");
-
+createApp(Popup).mount('body')

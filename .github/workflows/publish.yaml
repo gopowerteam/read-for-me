@@ -1,0 +1,35 @@
+name: publish
+on:
+  push:
+    branches:
+      - master
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    if: ${{ startsWith(github.event.head_commit.message, 'release') }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2.0.1
+        with:
+          version: ^8.0
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'pnpm'
+
+      - name: Publish Package Patch
+        run: npx bumpp patch -y
+        if: ${{ startsWith(github.event.head_commit.message, 'release(patch):') }}
+
+      - name: Publish Package Minor
+        run: npx bumpp patch -y
+        if: ${{ startsWith(github.event.head_commit.message, 'release(minor):') }}
+
+      - name: Publish Package Major
+        run: npx bumpp major -y
+        if: ${{ startsWith(github.event.head_commit.message, 'release(major):') }}

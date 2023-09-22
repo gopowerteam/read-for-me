@@ -1,47 +1,17 @@
-<script lang="ts" setup>
-import { onMounted, ref } from "vue";
-
-const tabs = ref<chrome.tabs.Tab[]>([])
-
-async function getTabList(){
-   tabs.value = await chrome.tabs.query({})
-}
-const data = ref(0)
-
-console.log(chrome['tabGroups'],33)
-async function onGroup(){
- data.value += 1
- localStorage.setItem("TTT",JSON.stringify(data.value))
-  // const ids = tabs.value.map(({id})=>id!)
-  // const group = await chrome.tabs.group({tabIds:ids})
-  // await chrome.tabGroups.update(group,{title:'DOCS'})
-}
-
-onMounted(async() => {
-  getTabList()
-  // data.value = JSON.parse(localStorage.getItem("TTT")||'0')
-});
-
-function onClick(tab: chrome.tabs.Tab){
-
-  chrome.tabs.update(tab.id!,{active:true})
-  chrome.windows.update(tab.windowId!, {focused:true})
-
-}
-</script>
-
 <template>
-  <div style="color:red;" @click="onGroup">number:{{ data }}</div>
+  <div style="color:red;" @click="onGroup">
+    number:{{ data }}
+  </div>
   <div>
-    <img src="/icon-with-shadow.svg" />
+    <img src="/icon-with-shadow.svg">
     <h1>vite-plugin-web-extension</h1>
     <p>Template: <code>vue-ts123</code></p>
   </div>
   <div>
-    <div v-for="tab in tabs"  style="display:flex;">
-      <span  @click="()=>onClick(tab)">{{ tab.id}}</span>
+    <div v-for="tab in tabs" :key="tab.id" style="display:flex;">
+      <span @click="() => onClick(tab)">{{ tab.id }}</span>
       <span>{{ tab.title }}</span>
-      <span>{{ tab.url}}</span>
+      <span>{{ tab.url }}</span>
     </div>
   </div>
 </template>
@@ -93,3 +63,32 @@ code {
   border-radius: 2px;
 }
 </style>
+
+<script lang="ts" setup>
+import { onMounted, ref } from 'vue'
+
+const tabs = ref<chrome.tabs.Tab[]>([])
+
+async function getTabList() {
+  tabs.value = await chrome.tabs.query({})
+}
+const data = ref(0)
+
+async function onGroup() {
+  data.value += 1
+  localStorage.setItem('TTT', JSON.stringify(data.value))
+  // const ids = tabs.value.map(({id})=>id!)
+  // const group = await chrome.tabs.group({tabIds:ids})
+  // await chrome.tabGroups.update(group,{title:'DOCS'})
+}
+
+onMounted(async () => {
+  getTabList()
+  // data.value = JSON.parse(localStorage.getItem("TTT")||'0')
+})
+
+function onClick(tab: chrome.tabs.Tab) {
+  chrome.tabs.update(tab.id!, { active: true })
+  chrome.windows.update(tab.windowId!, { focused: true })
+}
+</script>

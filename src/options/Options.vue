@@ -1,15 +1,17 @@
 <template>
   <div class="header">
-    <div class="action"></div>
-    <div class="title">帮我读 ({{ appConfig.version }})</div>
+    <div class="action" />
+    <div class="title">
+      帮我读 ({{ appConfig.version }})
+    </div>
   </div>
   <div class="container">
     <ATabs direction="vertical" type="line">
       <ATabPane key="general" title="通用配置">
-        <GeneralSetting></GeneralSetting>
+        <GeneralSetting />
       </ATabPane>
       <ATabPane key="questions" title="问题配置">
-        <QuestionsSetting></QuestionsSetting>
+        <QuestionsSetting />
       </ATabPane>
       <!-- <ATabPane key="prompt" title="提示词配置">
         <PromptSetting></PromptSetting>
@@ -43,12 +45,7 @@ body {
 </style>
 
 <script lang="ts" setup>
-import { onMounted } from "vue";
-import { appConfig } from "../config/app.config";
-import GeneralSetting from "./components/general-setting.vue";
-import QuestionsSetting from "./components/questions-setting.vue";
-
-onMounted(() => {
-  console.log("for test.");
-});
+import { appConfig } from '../config/app.config'
+import GeneralSetting from './components/general-setting.vue'
+import QuestionsSetting from './components/questions-setting.vue'
 </script>

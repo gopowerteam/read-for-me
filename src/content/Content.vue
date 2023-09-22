@@ -1,120 +1,34 @@
 <template>
   <div class="read-for-me_container" :class="{ collapsed: store.collapsed }">
     <div class="collapsed-btn" @click="store.toggleCollapsed">
-      <span class="i-icon-park-outline:right"></span>
+      <span class="i-icon-park-outline:right" />
     </div>
     <div
-      class="chat-container absolute inset-0 flex flex-col"
       v-if="openai?.key"
+      class="chat-container absolute inset-0 flex flex-col"
     >
       <div class="chat-header">
-        <ChatHeader></ChatHeader>
+        <ChatHeader />
       </div>
       <div id="chat-list" class="chat-list flex-auto overflow-auto">
-        <ChatList></ChatList>
+        <ChatList />
       </div>
       <div class="chat-input">
-        <ChatInput></ChatInput>
+        <ChatInput />
       </div>
     </div>
     <div v-else class="flex flex-col justify-center items-center absolute inset-0">
-      <AButton type="primary" @click="onOpenOptions">配置OPENAI API KEY</AButton>
+      <AButton type="primary" @click="onOpenOptions">
+        配置OPENAI API KEY
+      </AButton>
       <div class="mt-2">
-        <ALink @click="onReload">刷新</ALink>
+        <ALink @click="onReload">
+          刷新
+        </ALink>
       </div>
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { onMounted } from "vue";
-import { extractFromHtml } from "@extractus/article-extractor";
-import { useStore } from "../store";
-import {
-  ACTION_CREATE_RECORD,
-  ACTION_SUMMARY_CONTENT,
-  ACTION_TOGGER_DRAWER,
-  EVENT_RESPONSE_MSG,
-  STORAGE_OPENAI_API,
-  ACTION_OPEN_OPTIONS
-} from "../config/constant.config";
-import ChatInput from "./components/chat-input.vue";
-import ChatList from "./components/chat-list.vue";
-import ChatHeader from "./components/chat-header.vue";
-import { watchOnce } from "@vueuse/core";
-
-const store = useStore();
-const openai = ref();
-
-function updateScroll() {
-  var element = document.getElementById("chat-list");
-
-  if (element) element.scrollTop = element.scrollHeight;
-}
-
-watchOnce(
-  () => store.collapsed,
-  () => {
-    if (!store.collapsed&&!!openai.value?.key) {
-      generateSummary();
-    }
-  }
-);
-/**
- * Extract Html Content form body
- */
-async function generateSummary() {
-  // 获取文章内容
-  const article = await extractFromHtml(document.documentElement.outerHTML);
-  store.updateContent(article?.content || "");
-  // 请求生成摘要
-  const id = store.addRecord("", "AI");
-
-  chrome.runtime.sendMessage({
-    type: ACTION_SUMMARY_CONTENT,
-    content: article?.content,
-    id,
-  });
-}
-
-function onMessage(
-  request: any,
-  sender: any,
-  sendResponse: (response?: any) => void
-) {
-  switch (request.type) {
-    case ACTION_TOGGER_DRAWER:
-      store.toggleCollapsed();
-      break;
-    case EVENT_RESPONSE_MSG:
-      store.updateRecord(request.id, request.content, request.state);
-      updateScroll();
-      break;
-    case ACTION_CREATE_RECORD:
-      const id = store.addRecord("", "AI");
-      sendResponse(id);
-      break;
-  }
-}
-
-async function getOpenAISetting() {
-  const storage = await chrome.storage.local.get();
-  openai.value = storage[STORAGE_OPENAI_API];
-}
-
-function onOpenOptions() {
-  chrome.runtime.sendMessage({ type: ACTION_OPEN_OPTIONS });
-}
-
-function onReload(){
-  location.reload()
-}
-
-onMounted(() => {
-  getOpenAISetting();
-  chrome.runtime.onMessage.addListener(onMessage);
-});
-</script>
 
 <style scoped lang="scss">
 .read-for-me_container {
@@ -169,3 +83,94 @@ onMounted(() => {
   }
 }
 </style>
+
+<script setup lang="ts">
+import { onMounted } from 'vue'
+import { extractFromHtml } from '@extractus/article-extractor'
+import { watchOnce } from '@vueuse/core'
+import { useStore } from '../store'
+import {
+  ACTION_CREATE_RECORD,
+  ACTION_OPEN_OPTIONS,
+  ACTION_SUMMARY_CONTENT,
+  ACTION_TOGGER_DRAWER,
+  EVENT_RESPONSE_MSG,
+  STORAGE_OPENAI_API,
+} from '../config/constant.config'
+import ChatInput from './components/chat-input.vue'
+import ChatList from './components/chat-list.vue'
+import ChatHeader from './components/chat-header.vue'
+
+const store = useStore()
+const openai = ref()
+
+function updateScroll() {
+  const element = document.getElementById('chat-list')
+
+  if (element) element.scrollTop = element.scrollHeight
+}
+
+watchOnce(
+  () => store.collapsed,
+  () => {
+    if (!store.collapsed && !!openai.value?.key)
+      generateSummary()
+  },
+)
+/**
+ * Extract Html Content form body
+ */
+async function generateSummary() {
+  // 获取文章内容
+  const article = await extractFromHtml(document.documentElement.outerHTML)
+  store.updateContent(article?.content || '')
+  // 请求生成摘要
+  const id = store.addRecord('', 'AI')
+
+  chrome.runtime.sendMessage({
+    type: ACTION_SUMMARY_CONTENT,
+    content: article?.content,
+    id,
+  })
+}
+
+function onMessage(
+  request: any,
+  sender: any,
+  sendResponse: (response?: any) => void,
+) {
+  switch (request.type) {
+    case ACTION_TOGGER_DRAWER:
+      store.toggleCollapsed()
+      break
+    case EVENT_RESPONSE_MSG:
+      store.updateRecord(request.id, request.content, request.state)
+      updateScroll()
+      break
+    case ACTION_CREATE_RECORD:
+    {
+      const id = store.addRecord('', 'AI')
+      sendResponse(id)
+      break
+    }
+  }
+}
+
+async function getOpenAISetting() {
+  const storage = await chrome.storage.local.get()
+  openai.value = storage[STORAGE_OPENAI_API]
+}
+
+function onOpenOptions() {
+  chrome.runtime.sendMessage({ type: ACTION_OPEN_OPTIONS })
+}
+
+function onReload() {
+  location.reload()
+}
+
+onMounted(() => {
+  getOpenAISetting()
+  chrome.runtime.onMessage.addListener(onMessage)
+})
+</script>

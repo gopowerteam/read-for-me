@@ -8,24 +8,13 @@
       v-if="record.state === 'WAITING'"
       class="flex items-center justify-center"
     >
-      <ASpin></ASpin>
+      <ASpin />
     </div>
     <div v-else>
       {{ record.content }}
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { useStore } from "../../store";
-
-const store = useStore();
-const props = defineProps<{
-  id: string;
-}>();
-
-const record = computed(() => store.records.find((x) => x.id === props.id));
-</script>
 
 <style scoped>
 .record {
@@ -46,3 +35,13 @@ const record = computed(() => store.records.find((x) => x.id === props.id));
   }
 }
 </style>
+
+<script setup lang="ts">
+import { useStore } from '../../store'
+
+const props = defineProps<{
+  id: string
+}>()
+const store = useStore()
+const record = computed(() => store.records.find(x => x.id === props.id))
+</script>

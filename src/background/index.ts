@@ -4,55 +4,54 @@ import {
   ACTION_OPEN_OPTIONS,
   ACTION_SUMMARY_CONTENT,
   ACTION_TOGGER_DRAWER,
-} from "../config/constant.config";
-import { getSummaryPrompt, getAnswerPrompt } from "./prompts";
-import { sendChat } from "./send-chat";
+} from '../config/constant.config'
+import { getAnswerPrompt, getSummaryPrompt } from './prompts'
+import { sendChat } from './send-chat'
 
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
-    title: "帮我读 | 全文总结",
-    type: "normal",
-    id: "SUMMARY_PAGE",
-    contexts: ["page"],
-  });
+    title: '帮我读 | 全文总结',
+    type: 'normal',
+    id: 'SUMMARY_PAGE',
+    contexts: ['page'],
+  })
 
   chrome.contextMenus.create({
-    title: "帮我读 | 选中总结",
-    type: "normal",
-    id: "SUMMARY_SELECTION",
-    contexts: ["selection"],
-  });
-});
+    title: '帮我读 | 选中总结',
+    type: 'normal',
+    id: 'SUMMARY_SELECTION',
+    contexts: ['selection'],
+  })
+})
 
 chrome.contextMenus.onClicked.addListener((data, tab) => {
   switch (data.menuItemId) {
-    case "SUMMARY_SELECTION": {
-      if (!data.selectionText || data.selectionText.length < 10) {
-        return;
-      }
+    case 'SUMMARY_SELECTION': {
+      if (!data.selectionText || data.selectionText.length < 10)
+        return
 
       chrome.tabs.sendMessage(
-        tab?.id!,
+        tab!.id!,
         {
           type: ACTION_CREATE_RECORD,
-          content: "",
-          state: "COMPLETED",
+          content: '',
+          state: 'COMPLETED',
         },
         (id) => {
-          sendSummaryChat(tab?.id!, id, data.selectionText!);
-        }
-      );
-      break;
+          sendSummaryChat(tab!.id!, id, data.selectionText!)
+        },
+      )
+      break
     }
     default:
-      toggleDrawer(tab);
-      break;
+      toggleDrawer(tab)
+      break
   }
-});
+})
 
 chrome.action.onClicked.addListener((tab) => {
-  toggleDrawer(tab);
-});
+  toggleDrawer(tab)
+})
 
 /**
  * 打开侧边栏
@@ -60,43 +59,42 @@ chrome.action.onClicked.addListener((tab) => {
  * @returns
  */
 function toggleDrawer(tab?: chrome.tabs.Tab) {
-  if (!tab?.id) {
-    return;
-  }
+  if (!tab?.id)
+    return
 
-  chrome.tabs.sendMessage(tab.id, { type: ACTION_TOGGER_DRAWER, data: {} });
+  chrome.tabs.sendMessage(tab.id, { type: ACTION_TOGGER_DRAWER, data: {} })
 }
 
 async function sendSummaryChat(tabId: number, id: string, content: string) {
-  const question = await getSummaryPrompt(content);
-  sendChat(tabId, id, question);
+  const question = await getSummaryPrompt(content)
+  sendChat(tabId, id, question)
 }
 
 async function sendAnswerChat(
   tabId: number,
   id: string,
   content: string,
-  question: string
+  question: string,
 ) {
-  const prompt = await getAnswerPrompt(content, question);
-  sendChat(tabId, id, prompt);
+  const prompt = await getAnswerPrompt(content, question)
+  sendChat(tabId, id, prompt)
 }
 
 chrome.runtime.onMessage.addListener((request, sender) => {
   switch (request.type) {
     case ACTION_SUMMARY_CONTENT:
-      sendSummaryChat(sender.tab!.id!, request.id, request.content);
-      break;
+      sendSummaryChat(sender.tab!.id!, request.id, request.content)
+      break
     case ACTION_ANSWER_CONTENT:
       sendAnswerChat(
         sender.tab!.id!,
         request.id,
         request.content,
-        request.question
-      );
-      break;
+        request.question,
+      )
+      break
     case ACTION_OPEN_OPTIONS:
-      chrome.runtime.openOptionsPage();
-      break;
+      chrome.runtime.openOptionsPage()
+      break
   }
-});
+})

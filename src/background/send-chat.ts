@@ -22,6 +22,7 @@ export async function sendChat(tabId: number, id: string, question: string) {
   )
 
   await model.call(question, {
+    timeout: 60000,
     callbacks: [
       {
         handleLLMNewToken(token: string) {

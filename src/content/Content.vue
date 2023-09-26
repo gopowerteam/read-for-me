@@ -1,6 +1,11 @@
 <template>
   <div class="read-for-me_container" :class="{ collapsed: store.collapsed }">
-    <div class="collapsed-btn" @click="store.toggleCollapsed">
+    <div
+      ref="collapsedBtn"
+      class="collapsed-btn"
+      :style="{ top: `${y}px` }"
+      @click.capture.stop.prevent="store.toggleCollapsed"
+    >
       <span class="i-icon-park-outline:right" />
     </div>
     <div
@@ -66,7 +71,6 @@
     align-items: center;
     position: absolute;
     left: -25px;
-    top: calc(50% - 25px);
     z-index: 100;
     font-size: 24px;
     padding-left: 3px;
@@ -87,7 +91,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { extractFromHtml } from '@extractus/article-extractor'
-import { watchOnce } from '@vueuse/core'
+import { useDraggable, watchOnce } from '@vueuse/core'
 import { useStore } from '../store'
 import {
   ACTION_CREATE_RECORD,
@@ -96,6 +100,7 @@ import {
   ACTION_TOGGER_DRAWER,
   EVENT_RESPONSE_MSG,
   STORAGE_OPENAI_API,
+  STORAGE_SETTING,
 } from '../config/constant.config'
 import ChatInput from './components/chat-input.vue'
 import ChatList from './components/chat-list.vue'
@@ -103,6 +108,35 @@ import ChatHeader from './components/chat-header.vue'
 
 const store = useStore()
 const openai = ref()
+
+const collapsedBtn = ref<HTMLElement | null>(null)
+
+// `style` will be a helper computed for `left: ?px; top: ?px;`
+const { y } = useDraggable(collapsedBtn, {
+  preventDefault: true,
+  stopPropagation: true,
+  capture: true,
+  axis: 'y',
+  initialValue: {
+    y: (window.screen.availHeight / 2) - 25,
+    x: 0,
+  },
+  async onEnd(position) {
+    await chrome.storage.local.set({
+      [STORAGE_SETTING]: {
+        btn_y: position.y,
+      },
+    })
+  },
+})
+
+async function getBtnPosition() {
+  const storage = await chrome.storage.local.get()
+  const setting = storage[STORAGE_SETTING]
+
+  if (setting?.btn_y)
+    y.value = setting.btn_y as number
+}
 
 function updateScroll() {
   const element = document.getElementById('chat-list')
@@ -187,6 +221,7 @@ function onReload() {
 
 onMounted(() => {
   getOpenAISetting()
+  getBtnPosition()
   chrome.runtime.onMessage.addListener(onMessage)
 })
 </script>

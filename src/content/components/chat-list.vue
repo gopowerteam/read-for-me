@@ -5,7 +5,6 @@
     :key="record.id"
   />
   <div v-if="!!store.content">
-    {{ !store.content }}
     <ChatQuestions v-if="showQuestions" />
   </div>
 </template>

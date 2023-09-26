@@ -1,5 +1,23 @@
 <template>
-  <ACard title="问题配置">
+  <ACard title="白名单">
+    <template #extra>
+      <ALink @click="() => questions.push('')">
+        添加
+      </ALink>
+      <ALink @click="onSaveQuestions">
+        保存
+      </ALink>
+    </template>
+    <ASpace direction="vertical" fill>
+      <AInput
+        v-for="question, index in questions"
+        :key="index"
+        v-model="questions[index]"
+        allow-clear
+      />
+    </ASpace>
+  </ACard>
+  <ACard title="黑名单">
     <template #extra>
       <ALink @click="() => questions.push('')">
         添加

@@ -13,6 +13,9 @@
       <ATabPane key="questions" title="问题配置">
         <QuestionsSetting />
       </ATabPane>
+      <!-- <ATabPane key="visit" title="启用配置">
+        <VisitList />
+      </ATabPane> -->
       <!-- <ATabPane key="prompt" title="提示词配置">
         <PromptSetting></PromptSetting>
       </ATabPane>

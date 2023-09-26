@@ -122,9 +122,10 @@ const { y } = useDraggable(collapsedBtn, {
     x: 0,
   },
   async onEnd(position) {
+    const y = Math.min(Math.max(0, position.y), (window.innerHeight - 70))
     await chrome.storage.local.set({
       [STORAGE_SETTING]: {
-        btn_y: position.y,
+        btn_y: y,
       },
     })
   },
@@ -133,9 +134,7 @@ const { y } = useDraggable(collapsedBtn, {
 async function getBtnPosition() {
   const storage = await chrome.storage.local.get()
   const setting = storage[STORAGE_SETTING]
-
-  if (setting?.btn_y)
-    y.value = setting.btn_y as number
+  if (setting?.btn_y) y.value = setting?.btn_y
 }
 
 function updateScroll() {
